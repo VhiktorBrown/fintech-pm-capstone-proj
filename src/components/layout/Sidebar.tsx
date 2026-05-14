@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, ArrowRightLeft, Send, List, Users, UserCircle, HelpCircle, LogOut } from 'lucide-react';
+import { LayoutDashboard, ArrowRightLeft, Send, List, Users, UserCircle, HelpCircle, LogOut, X } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { TierBadge } from '../ui/Badge';
 import { mockUserData } from '../../context/AppContext';
@@ -13,19 +13,33 @@ const navItems = [
   { to: '/profile/verification', icon: UserCircle, label: 'Profile' },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { kybTier } = useApp();
   const navigate = useNavigate();
 
   return (
-    <nav className="sidebar">
+    <nav className={`sidebar${isOpen ? ' sidebar-open' : ''}`}>
+      {/* Mobile close button — hidden on desktop via CSS */}
+      <button
+        onClick={onClose}
+        className="mobile-close-btn"
+        style={{ position: 'absolute', top: 14, right: 14, color: 'rgba(255,255,255,0.6)', padding: 6, borderRadius: 6, alignItems: 'center', justifyContent: 'center' }}
+      >
+        <X size={18} />
+      </button>
+
       {/* Logo */}
       <div style={{ padding: '0 20px 24px 20px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
         <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 22, color: '#FFFFFF', letterSpacing: '-0.5px' }}>
           Borderless
         </h1>
         <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>Pay China, Simply</p>
-        <div onClick={() => navigate('/profile/verification')} style={{ cursor: 'pointer', marginTop: 12 }}>
+        <div onClick={() => { navigate('/profile/verification'); onClose?.(); }} style={{ cursor: 'pointer', marginTop: 12 }}>
           <TierBadge tier={kybTier} />
         </div>
       </div>
@@ -36,6 +50,7 @@ export function Sidebar() {
           <NavLink
             key={to}
             to={to}
+            onClick={onClose}
             style={({ isActive }) => ({
               display: 'flex', alignItems: 'center', gap: 10,
               padding: '11px 12px', borderRadius: 8, marginBottom: 2,
@@ -64,7 +79,7 @@ export function Sidebar() {
           Support
         </button>
         <button
-          onClick={() => navigate('/signup')}
+          onClick={() => { navigate('/signup'); onClose?.(); }}
           style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', width: '100%', color: 'rgba(255,255,255,0.45)', fontSize: 13, borderRadius: 8 }}
         >
           <LogOut size={15} />

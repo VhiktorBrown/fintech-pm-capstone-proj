@@ -1,16 +1,37 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Sidebar } from './Sidebar';
 import { useApp } from '../../context/AppContext';
-import { X } from 'lucide-react';
+import { X, Menu } from 'lucide-react';
 
 interface Props { children: ReactNode; }
 
 export function AuthLayout({ children }: Props) {
   const { toast, dismissToast } = useApp();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="auth-layout">
-      <Sidebar />
+      {/* Mobile top bar — hidden on desktop via CSS */}
+      <header className="mobile-header">
+        <button
+          onClick={() => setSidebarOpen(true)}
+          style={{ color: '#FFFFFF', display: 'flex', alignItems: 'center', padding: 4, background: 'none', border: 'none', cursor: 'pointer' }}
+        >
+          <Menu size={22} />
+        </button>
+        <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 18, color: '#FFFFFF', letterSpacing: '-0.3px' }}>
+          Borderless
+        </h1>
+        <div style={{ width: 30 }} />
+      </header>
+
+      {/* Tap-outside overlay */}
+      {sidebarOpen && (
+        <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />
+      )}
+
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
       <main className="content-area">
         {children}
       </main>
